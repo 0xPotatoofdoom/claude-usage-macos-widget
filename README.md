@@ -35,23 +35,20 @@ xcodegen generate
 
 ### 2. Configure signing
 
-Open `project.yml` and replace the `DEVELOPMENT_TEAM` value with your own Apple Developer Team ID:
-
-```yaml
-settings:
-  base:
-    DEVELOPMENT_TEAM: "YOUR_TEAM_ID_HERE"
-```
-
-You can find your Team ID by running:
+Find your Apple Developer Team ID:
 
 ```bash
 security find-certificate -c "Apple Development" -p ~/Library/Keychains/login.keychain-db | openssl x509 -noout -subject
 ```
 
-Look for the `OU=` field in the output.
+Look for the `OU=` field (e.g. `OU=ABC123XYZ`). Then replace `YOUR_TEAM_ID` with it across the project:
 
-Also update the App Group ID in `project.yml` -- replace `YOUR_TEAM_ID` with your Team ID in all `com.apple.security.application-groups` entries.
+```bash
+# macOS/Linux
+sed -i '' "s/YOUR_TEAM_ID/ABC123XYZ/g" project.yml Shared/UsageStats.swift ClaudeThrottle/ClaudeThrottle.entitlements ClaudeThrottleWidget/ClaudeThrottleWidget.entitlements
+```
+
+This sets the signing team and App Group IDs in all the right places.
 
 ### 3. Build and install
 
