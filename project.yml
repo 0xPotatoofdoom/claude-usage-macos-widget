@@ -1,0 +1,81 @@
+name: ClaudeThrottle
+options:
+  bundleIdPrefix: com.claudethrottle
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "16.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "6"
+    CODE_SIGN_STYLE: "Automatic"
+    DEVELOPMENT_TEAM: "YOUR_TEAM_ID"
+
+targets:
+  ClaudeThrottle:
+    type: application
+    platform: macOS
+    entitlements:
+      path: ClaudeThrottle/ClaudeThrottle.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.files.user-selected.read-only: true
+        com.apple.security.temporary-exception.files.home-relative-path.read-only:
+          - .claude/stats-cache.json
+        com.apple.security.application-groups:
+          - "YOUR_TEAM_ID.com.claudethrottle.shared"
+    sources:
+      - path: ClaudeThrottle
+        excludes:
+          - Info.plist
+          - "*.entitlements"
+      - path: Shared
+    info:
+      path: ClaudeThrottle/Info.plist
+      properties:
+        CFBundleName: Claude Throttle
+        CFBundleDisplayName: Claude Throttle
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        CFBundlePackageType: APPL
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        LSUIElement: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.claudethrottle.app
+    dependencies:
+      - target: ClaudeThrottleWidgetExtension
+
+  ClaudeThrottleWidgetExtension:
+    type: app-extension
+    platform: macOS
+    product: ClaudeThrottleWidgetExtension
+    entitlements:
+      path: ClaudeThrottleWidget/ClaudeThrottleWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.application-groups:
+          - "YOUR_TEAM_ID.com.claudethrottle.shared"
+    sources:
+      - path: ClaudeThrottleWidget
+        excludes:
+          - Info.plist
+          - "*.entitlements"
+      - path: Shared
+    info:
+      path: ClaudeThrottleWidget/Info.plist
+      properties:
+        CFBundleName: ClaudeThrottleWidgetExtension
+        CFBundleDisplayName: Claude Throttle Widget
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        CFBundlePackageType: "XPC!"
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.claudethrottle.app.widget
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks"
